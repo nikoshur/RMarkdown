@@ -1,0 +1,23 @@
+---
+title: "clase_7"
+author: "niko"
+date: "28/2/2020"
+output:
+  word_document:
+    reference_docx: docx_template.docx
+bibliography: refs.bib
+link-citations: yes
+csl: pakistani-veterinary-journal.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+tras revisar las referencias @Johnstone2016 y @IPCC2018 concluimos que el fantastico ralph wiggun!!!!!!
+
+y aqui boi a meter una sita mas pa komplikarlo todo porke soy asin de guai
+
+<div id="refs"></div> ##esto se usa para indicar donde se tienen que insertar las citas!!
+
+entonces podemos seguir eescribiento e insertando referencia
