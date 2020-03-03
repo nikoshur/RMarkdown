@@ -108,7 +108,7 @@ paste('Hola',  'mundo')
 
 Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código y que no se muestre el resultado en R
 
-```{r, eval = FALSE}
+```{r, echo = FALSE}
 paste('Hola', 'mundo')
 ```
 
