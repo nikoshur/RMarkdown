@@ -13,7 +13,7 @@ csl: pakistani-veterinary-journal.csl
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Formato .bib para las referencias, con todas en un único archivo!
+Formato .bib para las referencias, con todas en un único archivo! y ese archivo debe estar en la misma carpeta que el archivo **Rmd**!!
 
 ...tras revisar las referencias @Johnstone2016 y @IPCC2018 concluimos que el fantastico ralph wiggun!!
 
