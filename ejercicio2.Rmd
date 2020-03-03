@@ -1,0 +1,193 @@
+---
+title: "Práctica 2. GitHub y Ciencia Reproducible"
+author: "Adrián Vicioso y Nikolai Shurupov"
+date: "3/1/2020"
+output: word_document
+bibliography: bibliografia.bib
+link-citations: yes
+csl: apa-no-issue-numbers.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Ciencia reproducible
+
+## ¿Qué es la ciencia reproducible? ¿En qué casos se consigue un 100% de la reproducibilidad?
+
+
+Según el artículo de @Rodriguez-Sanchez2016, un estudion científico es **reproducible** cuando el texto del artículo viene acompañado del codigo empleado para **recrear** todos los **resultados** así como las figuras. 
+Para que un artículo sea 100% reproducible, es necesario que al autor aporte además del texto y los resultados finales de la investigación, los **datos empleados** para el estudio, el **codigo** que se ha ejecutado durante la investigación y el **control de versiones**.  
+
+
+## ¿Cuáles de los beneficios que se sugieren son para ti los más importantes? 
+
+Sin nunguna duda, practicar la ciencia reproducible permite **ahorrar tiempo** y **esfuerzo** en futuros proyectos ya que tener disponible el código de investigaciones anteriores permite comprender de manera rápida y **eficaz** el trabajo realizado previamente y de este modo, destinar el mayor tiempo de nuestro tiempo a aportar nuevo conocimiento a través de nuestras investigaciones sin tener que perder demasiado tiempo en realizar trabajo que ya se ha realizado previamente. Esto aumenta en un grado muy positivo la eficiencia de las investigaciones. Además es muy importante señalar que la publicación del codigo empleado permite **detectar errores** e introducir mejoras en codigos anteriores lo cual permite un **progreso** más rápido.
+
+## ¿Por qué no hace todo el mundo Ciencia Reproducible?
+
+Una de las principales razones por la que a día de hoy no todo el mundo practica la ciencia reproducible, es porque hay que destinar un cierto tiempo al aprendizaje de lenguajes de programación como son *"R"* o *"Python"*, así como al empleo de herramientas como son *"Git"* o *"Rmarkdown"*. No obstante, cada vez hay un mayor numero de científicos que optan por enfocar sus investigaciones hacia la **ciencia reproducible** además de que hay ciertas revistas y repositorios que obligan a los investigadores a adjuntar sus datos y codigo empleado lo cual está suponiendo que la ciencia reproducible esté cada vez más presente.
+
+***
+
+# 2. Introducción a Git, GitHub y su gran utilidad
+
+Git es un **software** que se encarga de la *gestión* y *optimización* de las distintas versiones que se generan cuando se trabaja con archivos (de texto o código generalmente), de tal manera que supone una gran **ayuda organizativa** para proyectos extensos en los que hay muchos cambios a lo largo del tiempo. Junto con este software existe la **plataforma GitHub**, que nos proporciona un espacio personal en la nube que nos permite guardar estos archivos y ofrecer acceso a ello para un **trabajo simultáneo** por varias personas, de manera que facilita la organización de las distintas versiones en proyectos en los que participan numerosas personas.
+
+Existen muchas guías para iniciarse en el uso de esta herramienta tan útil. Para esta práctica se ha utilizado una guía muy **sencilla** y ***resumida**, de En ella se pueden ver las **bases** de GitHub, el registro, creación de proyectos y cómo navegar por ellos y cómo conectar nuestro Git personal con nuestro GitHub. Se resumen los aspectos más importantes a continuación:
+
+-	***Repositorio***:
+-	***Rama***:
+-	***Pull and push***:
+-	***Fork***:
+
+En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  ***CLS***. En el repositorio de RMarkdown se puede encontrar el script utilizado para esta práctica.
+
+
+\pagebreak
+
+# 3. R Markdown
+
+A continuación se presentan los ejercicios correspondientes al bloque de R Markdown
+
+## Ejercicio 3.4.1
+
+A continuación se presentan las diferentes opciones de sintaxis básicas de Pandoc Markdown.  
+
+Hola mundo  
+*Hola mundo*  
+**Hola mundo**  
+Hola^mundo^  
+Hola~mundo~  
+~~Hola mundo~~  
+
+[Universidad de Alcalá](https://www.uah.es/es/)  
+
+***Ecuación en línea***: $\sum_{i=1}^{n} X^3_i$
+
+***Ecuación en bloque***: $$\sum_{i=1}^{n} X^3_i$$
+
+
+# Encabezado 1
+## Encabezado 2
+### Encabezado 3
+#### Encabezado 4
+
+## Ejercicio 3.4.2
+
+Se desea pegar las palabas “Hola” y “mundo” en una línea nueva
+
+```{r}
+paste('Hola')  
+paste('mundo')
+```
+
+## Ejercicio 3.4.3
+
+Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código
+
+```{r}
+paste('Hola',  'mundo')
+```
+
+
+## Ejercicio 3.4.4
+
+Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código y que no se muestre el resultado en R
+
+```{r, eval = FALSE}
+paste('Hola', 'mundo')
+```
+
+
+## Ejercicio 3.4.5
+
+Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código y que no se muestre el resultado en R y que no se muestre en el documento de Word.
+
+```{r, eval = FALSE, echo = FALSE}
+paste('Hola', 'mundo')
+```
+
+\pagebreak
+
+# 4. Generación de tabla y gráfica
+
+Se pide Mostrar una tabla y una gráfica en el archivo de salida, tomando alguno de los datos que vienen en R o alguno de sus paquetes, presentando encabezados, explicaciones, ecuaciones, líneas de código en el texto y bloques de código.  
+
+## Construcción del data frame
+En primer lugar, se ha definido un dataframe para representar diferentes precios junto con su identidicador:
+
+```{r}
+#vector precio que repita 4,2,1,3 las siguientes veces (1,5,10,14)
+
+precios <- rep(c(4,2,1,3), c(1,5,10,14))
+
+#crear ID #paste
+
+id <- paste('id', c(1:30), sep = '-')
+
+#crear el data frame
+
+data <- data.frame(id, precios)
+
+```
+
+\pagebreak
+
+## Tabla 
+
+Para mostras este dataframe en forma de tabla se han utilizado las bibliotecas de `flextable` , `officer` y `tidyverse` :
+```{r, echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
+library(flextable)
+library(officer)
+library(tidyverse)
+
+ftable <- flextable(data) %>%
+  align(align = "center", part = "body") %>%
+  align(align = "center", part = "header") 
+
+
+ftable <- colformat_num(ftable, col_keys = c("id", "precios"), digits = 0)
+
+ftable <- border_remove( ftable )
+
+big_b <- fp_border(color="gray50", width = 2)
+std_b <- fp_border(color="gray", style = "dashed")
+
+ftable <- vline( ftable, border = std_b, part = "all" )
+ftable <- vline_left( ftable, border = big_b, part = "all" )
+ftable <- vline_right( ftable, border = big_b, part = "all" )
+
+ftable <- hline( ftable, border = std_b )
+ftable <- hline_bottom( ftable, border = big_b )
+ftable <- hline_top( ftable, border = big_b, part = "all" )
+
+
+ftable <- italic(ftable, j = 1)
+ftable <- bg(ftable, bg = "#3c9c69", part = "header")
+ftable <- bg(ftable, bg = "#d3ffce", part = "body")
+ftable <- color(ftable, color = "white", part = "header")
+ftable <- color(ftable, color = "black")
+ftable <- bold(ftable, bold = TRUE)
+
+ftable <- autofit(ftable)
+
+ftable
+```
+
+
+## Diagrama de cajas de los precios
+
+Posteriormente se ha procedido a estudiar estadísticamente los datos, para lo cual se han aplicado las fórmulas de media:   **$\frac{\sum_{i=1}^{n} X_i}{N}$**    y de la desviación típica: **$\sqrt{\frac{\sum_{i=1}^{n} (X_i - \tilde x)^2}{N}}$**    obteniendo los valores de `r mean(precios)` para la media $\tilde x$  y `r sd(precios)` para la desviación típica $\sigma$. Como complemento a esta información se ha realizado un diagrama de cajas con la fución `boxplot` mostrando el resultado a continuación:
+
+```{r, echo = FALSE}
+boxplot(data$precios, main = '', xlab = 'Diagrama de cajas de la variable precios', ylab = 'Precio', ylim = c(0,4), mar = c(2,2,2,2), col = c("green"))
+```
+
+\pagebreak
+
+
+# 5. Bibliografía
+<div id="refs"></div> 
+
