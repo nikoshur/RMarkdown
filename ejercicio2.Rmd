@@ -47,9 +47,9 @@ Existen muchas guías para iniciarse en el uso de esta herramienta tan útil. Pa
 
 En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  **CLS**(Citation Style Language). En el repositorio de **"RMarkdown"** se puede encontrar el script utilizado para esta práctica.
 
-[**-- Cuenta de Nikolai Shurupov --**](https://github.com/nikoshur)
+[**--> Cuenta de Nikolai Shurupov <--**](https://github.com/nikoshur)
 
-[**-- Repositorio de la práctica --**](https://github.com/nikoshur/RMarkdown)
+[**--> Repositorio de la práctica <--**](https://github.com/nikoshur/RMarkdown)
 \pagebreak
 
 
@@ -58,9 +58,9 @@ En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se 
 A continuación se presentan los ejercicios correspondientes al bloque de R Markdown
 
 
-## Ejercicio 3.4.1
+## Ejercicio 3.1
 
-A continuación se presentan las diferentes opciones de sintaxis básicas de Pandoc Markdown.  
+Las diferentes opciones de sintaxis básicas de Pandoc Markdown son las siguientes:  
 
 Hola mundo  
 *Hola mundo*  
@@ -83,7 +83,7 @@ Hola~mundo~
 
 ***
 
-## Ejercicio 3.4.2
+## Ejercicio 3.2
 
 Se desea pegar las palabas “Hola” y “mundo” en una línea nueva
 
@@ -94,7 +94,7 @@ paste('mundo')
 
 ***
 
-## Ejercicio 3.4.3
+## Ejercicio 3.3
 
 Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código
 
@@ -104,7 +104,7 @@ paste('Hola',  'mundo')
 
 ***
 
-## Ejercicio 3.4.4
+## Ejercicio 3.4
 
 Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código y que no se muestre el resultado en R
 
@@ -114,7 +114,7 @@ paste('Hola', 'mundo')
 
 ***
 
-## Ejercicio 3.4.5
+## Ejercicio 3.5
 
 Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código y que no se muestre el resultado en R y que no se muestre en el documento de Word.
 
@@ -131,18 +131,23 @@ Se pide mostrar una tabla y una gráfica en el archivo de salida, tomando alguno
 ## Construcción del data frame
 En primer lugar, se ha definido un dataframe para representar diferentes precios junto con su identidicador:
 
-```{r}
-#vector precio que repita 4,2,1,3 las siguientes veces (1,5,10,14)
+```{r, message = FALSE}
+library(tidyverse)
 
-precios <- rep(c(4,2,1,3), c(1,5,10,14))
+# utilizamos el dataframe que viene con la librería tidyverse, cars y seleccionamos aquellos con una velocidad mayor a 14km/h
+data <- cars[cars$speed > 14,]
 
-#crear ID #paste
+Color <- rep(c("rojo", "azul", "verde"), 9)
 
-id <- paste('id', c(1:30), sep = '-')
+# se le añade al data frame la columna color
 
-#crear el data frame
+data <- data.frame(data, Color = Color)
 
-data <- data.frame(id, precios)
+# le cambiamos los nombres para que se entiendan posteriormente
+
+data_2 <- data %>%
+  rename("Velocidad"=speed,
+         "Cantidad_circulando"=dist)
 
 ```
 
@@ -154,14 +159,10 @@ Para mostrar este dataframe en forma de tabla se han utilizado las bibliotecas d
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
 library(flextable)
 library(officer)
-library(tidyverse)
 
-ftable <- flextable(data) %>%
+ftable <- flextable(data_2) %>%
   align(align = "center", part = "body") %>%
   align(align = "center", part = "header") 
-
-
-ftable <- colformat_num(ftable, col_keys = c("id", "precios"), digits = 0)
 
 ftable <- border_remove( ftable )
 
@@ -189,18 +190,21 @@ ftable <- autofit(ftable)
 ftable
 ```
 
+\pagebreak
 
 ## Diagrama de cajas de los precios
 
-Posteriormente se ha procedido a estudiar estadísticamente los datos, para lo cual se han aplicado las fórmulas de media:   **$\frac{\sum_{i=1}^{n} X_i}{N}$**    y de la desviación típica: **$\sqrt{\frac{\sum_{i=1}^{n} (X_i - \tilde x)^2}{N}}$**    obteniendo los valores de `r mean(precios)` para la media $\tilde x$  y `r sd(precios)` para la desviación típica $\sigma$. Como complemento a esta información se ha realizado un diagrama de cajas con la fución `boxplot` mostrando el resultado a continuación:
+Posteriormente se ha procedido a estudiar estadísticamente los datos de velocidad, para lo cual se han aplicado las fórmulas de media:   **$\frac{\sum_{i=1}^{n} X_i}{N}$**    y de la desviación típica: **$\sqrt{\frac{\sum_{i=1}^{n} (X_i - \tilde x)^2}{N}}$**    obteniendo los valores de `r mean(data$speed)` para la media $\tilde x$  y `r sd(data$speed)` para la desviación típica $\sigma$. Como complemento a esta información se ha realizado un diagrama de cajas con la fución `plot` mostrando el resultado a continuación:
 
 ```{r, echo = FALSE}
-boxplot(data$precios, main = '', xlab = 'Diagrama de cajas de la variable precios', ylab = 'Precio', ylim = c(0,4), mar = c(2,2,2,2), col = c("green"))
+plot (x = data$Color, y = data$speed, xlab="Color del coche",
+     ylab ="Velocidad (km/h)", col = c("blue", "red", "green"))
 ```
 
 \pagebreak
 
 
 # 5. Bibliografía
+
 <div id="refs"></div> 
 
