@@ -29,27 +29,34 @@ Sin nunguna duda, practicar la ciencia reproducible permite **ahorrar tiempo** y
 
 Una de las principales razones por la que a día de hoy no todo el mundo practica la ciencia reproducible, es porque hay que destinar un cierto tiempo al aprendizaje de lenguajes de programación como son *"R"* o *"Python"*, así como al empleo de herramientas como son *"Git"* o *"Rmarkdown"*. No obstante, cada vez hay un mayor numero de científicos que optan por enfocar sus investigaciones hacia la **ciencia reproducible** además de que hay ciertas revistas y repositorios que obligan a los investigadores a adjuntar sus datos y codigo empleado lo cual está suponiendo que la ciencia reproducible esté cada vez más presente.
 
-***
+
 
 # 2. Introducción a Git, GitHub y su gran utilidad
 
 Git es un **software** que se encarga de la *gestión* y *optimización* de las distintas versiones que se generan cuando se trabaja con archivos (de texto o código generalmente), de tal manera que supone una gran **ayuda organizativa** para proyectos extensos en los que hay muchos cambios a lo largo del tiempo. Junto con este software existe la **plataforma GitHub**, que nos proporciona un espacio personal en la nube que nos permite guardar estos archivos y ofrecer acceso a ello para un **trabajo simultáneo** por varias personas, de manera que facilita la organización de las distintas versiones en proyectos en los que participan numerosas personas.
 
-Existen muchas guías para iniciarse en el uso de esta herramienta tan útil. Para esta práctica se ha utilizado una guía muy **sencilla** y ***resumida**, de En ella se pueden ver las **bases** de GitHub, el registro, creación de proyectos y cómo navegar por ellos y cómo conectar nuestro Git personal con nuestro GitHub. Se resumen los aspectos más importantes a continuación:
+Existen muchas guías para iniciarse en el uso de esta herramienta tan útil. Para esta práctica se ha utilizado una guía muy **sencilla** y **resumida**, de @GaleanoPrieto2018. En ella se pueden ver las **bases** de GitHub, el registro, creación de proyectos y cómo navegar por ellos y cómo conectar nuestro Git personal con nuestro GitHub. Se resumen los aspectos más importantes a continuación:
 
--	***Repositorio***:
--	***Rama***:
--	***Pull and push***:
--	***Fork***:
+-	***Repositorio***: Es la unidad de **mayor nivel** de Git, con similitud a los proyectos de R. Es un **directorio** donde se guardarán todos los archivos de un proyecto determinado, los cuales podrán ser descargados o clonados y sobre los que se podrán ver diferentes aspectos, como los cambios, quien los hizo o la estructura del repositorio.
 
-En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  ***CLS***. En el repositorio de RMarkdown se puede encontrar el script utilizado para esta práctica.
+-	***Rama***: es un **"clon"** de los archivos que tenemos en nuestro repositorio, sobre los que podemos hacer cambios sin afectar a los originales, que pertenecen al *"tronco"*, que se denomina **"Master"**. Se pueden hacer cuantas ramas se quiera, y sobre ellas se pueden hacer se pùede "experimentar" sin afectar al *Master*. Si queremos que las operaciones que hemos realizado sobre esta rama se incorporen al *Master* se puede fusionar estar *rama* con el mediante un **pull request**.
 
+-	***Pull and push***: es la **descarga** de la última versión de un archivo en la nube a nuestro Git local, en nuestro de ordenador personal. Una vez hayamos hecho los cambios, se hace un commit, que es la constatación de los cambios que se han hecho, y por último el pull es la **subida** a la nube de la nueva versión del archivo.
 
+-	***Fork***: es una clonación de un repositorio público de **otra cuenta a nuestra cuenta**, de manera que podemos trabajar sobre los repositorios de otra gente, alojándolos en nuestra propia cuenta y sin alterar el reposotorio original.
+
+En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  **CLS**(Citation Style Language). En el repositorio de **"RMarkdown"** se puede encontrar el script utilizado para esta práctica.
+
+[**-- Cuenta de Nikolai Shurupov --**](https://github.com/nikoshur)
+
+[**-- Repositorio de la práctica --**](https://github.com/nikoshur/RMarkdown)
 \pagebreak
+
 
 # 3. R Markdown
 
 A continuación se presentan los ejercicios correspondientes al bloque de R Markdown
+
 
 ## Ejercicio 3.4.1
 
@@ -74,6 +81,8 @@ Hola~mundo~
 ### Encabezado 3
 #### Encabezado 4
 
+***
+
 ## Ejercicio 3.4.2
 
 Se desea pegar las palabas “Hola” y “mundo” en una línea nueva
@@ -83,6 +92,8 @@ paste('Hola')
 paste('mundo')
 ```
 
+***
+
 ## Ejercicio 3.4.3
 
 Se desea pegar las palabas “Hola” y “mundo” en la misma línea de código
@@ -91,6 +102,7 @@ Se desea pegar las palabas “Hola” y “mundo” en la misma línea de códig
 paste('Hola',  'mundo')
 ```
 
+***
 
 ## Ejercicio 3.4.4
 
@@ -100,6 +112,7 @@ Se desea pegar las palabas “Hola” y “mundo” en la misma línea de códig
 paste('Hola', 'mundo')
 ```
 
+***
 
 ## Ejercicio 3.4.5
 
@@ -113,7 +126,7 @@ paste('Hola', 'mundo')
 
 # 4. Generación de tabla y gráfica
 
-Se pide Mostrar una tabla y una gráfica en el archivo de salida, tomando alguno de los datos que vienen en R o alguno de sus paquetes, presentando encabezados, explicaciones, ecuaciones, líneas de código en el texto y bloques de código.  
+Se pide mostrar una tabla y una gráfica en el archivo de salida, tomando alguno de los datos que vienen en R o alguno de sus paquetes, presentando encabezados, explicaciones, ecuaciones, líneas de código en el texto y bloques de código.  
 
 ## Construcción del data frame
 En primer lugar, se ha definido un dataframe para representar diferentes precios junto con su identidicador:
@@ -137,7 +150,7 @@ data <- data.frame(id, precios)
 
 ## Tabla 
 
-Para mostras este dataframe en forma de tabla se han utilizado las bibliotecas de `flextable` , `officer` y `tidyverse` :
+Para mostrar este dataframe en forma de tabla se han utilizado las bibliotecas de `flextable` , `officer` y `tidyverse` :
 ```{r, echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
 library(flextable)
 library(officer)
