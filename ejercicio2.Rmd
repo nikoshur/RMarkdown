@@ -39,18 +39,16 @@ Existen muchas guías para iniciarse en el uso de esta herramienta tan útil. Pa
 
 -	***Repositorio***: Es la unidad de **mayor nivel** de Git, con similitud a los proyectos de R. Es un **directorio** donde se guardarán todos los archivos de un proyecto determinado, los cuales podrán ser descargados o clonados y sobre los que se podrán ver diferentes aspectos, como los cambios, quien los hizo o la estructura del repositorio.
 
--	***Rama***: es un **"clon"** de los archivos que tenemos en nuestro repositorio, sobre los que podemos hacer cambios sin afectar a los originales, que pertenecen al *"tronco"*, que se denomina **"Master"**. Se pueden hacer cuantas ramas se quiera, y sobre ellas se puede "experimentar" sin afectar al *Master*. Si queremos que las operaciones que hemos realizado sobre esta rama se incorporen al *Master* se puede fusionar esta *rama* con él mediante un **pull request**.
+-	***Rama***: es un **"clon"** de los archivos que tenemos en nuestro repositorio, sobre los que podemos hacer cambios sin afectar a los originales, que pertenecen al *"tronco"*, denominado **"Master"**. Se pueden hacer cuantas ramas se quiera, y sobre ellas se puede "experimentar" sin afectar al *Master*. Si queremos que las operaciones que hemos realizado sobre una rama se incorporen al *Master* se puede fusionar la *rama* con *"tronco"* mediante un **pull request**.
 
 -	***Pull and push***: es la **descarga** de la última versión de un archivo en la nube a nuestro Git local, en nuestro de ordenador personal. Una vez hayamos hecho los cambios, se hace un commit, que es la constatación de los cambios que se han hecho, y por último el pull es la **subida** a la nube de la nueva versión del archivo.
 
 -	***Fork***: es una clonación de un repositorio público de **otra cuenta** a **nuestra cuenta**, de manera que podemos trabajar sobre los repositorios de otra gente, alojándolos en nuestra propia cuenta y sin alterar el reposotorio de otros.
 
-En el siguiente enlace se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  **CLS**(Citation Style Language). En el repositorio de **"RMarkdown"** se puede encontrar el script utilizado para esta práctica. Para la elaboración del Script de la práctica se han hecho diversas modificaciones del archivo en el GitHub mediante push and pull desde R studio, por lo que se pueden ver los cambios hechos a lo largo de la realización de la práctica.
+En los siguiente enlaces se puede acceder al GitHub de Nikolai Shurupov, donde se puede observar que hay varios repositorios, uno resultado de realizar un *Fork* sobre el repositorio del GitHub del  **CLS**(Citation Style Language). En el repositorio de **"RMarkdown"** se puede encontrar el script utilizado para esta práctica, que es el resultado del trabajo de *R Studio* con *GitHub* utilizando **commit, push and pull** pudiendo de esta manera ver las diferentes versiones del Script.
 
-[**--> Cuenta de Nikolai Shurupov <--**](https://github.com/nikoshur)
-
+[**--> Cuenta de Nikolai Shurupov <--**](https://github.com/nikoshur)         
 [**--> Repositorio de la práctica <--**](https://github.com/nikoshur/RMarkdown)
-\pagebreak
 
 
 # 3. R Markdown
