@@ -127,7 +127,7 @@ paste('Hola', 'mundo')
 Se pide mostrar una tabla y una gráfica en el archivo de salida, tomando alguno de los datos que vienen en R o alguno de sus paquetes, presentando encabezados, explicaciones, ecuaciones, líneas de código en el texto y bloques de código.  
 
 ## Construcción del data frame
-En primer lugar, se ha definido un dataframe para representar diferentes precios junto con su identidicador:
+En primer lugar, se ha definido un dataframe a partir de uno preestablecido en la librería de `tidyverse`, llamado "cars", al que se le ha añadido una columna extra con el color:
 
 ```{r, message = FALSE}
 library(tidyverse)
@@ -192,7 +192,7 @@ ftable
 
 ## Diagrama de cajas de los precios
 
-Posteriormente se ha procedido a estudiar estadísticamente los datos de velocidad, para lo cual se han aplicado las fórmulas de media:   **$\frac{\sum_{i=1}^{n} X_i}{N}$**    y de la desviación típica: **$\sqrt{\frac{\sum_{i=1}^{n} (X_i - \tilde x)^2}{N}}$**    obteniendo los valores de `r mean(data$speed)` para la media $\tilde x$  y `r sd(data$speed)` para la desviación típica $\sigma$. Como complemento a esta información se ha realizado un diagrama de cajas con la fución `plot` mostrando el resultado a continuación:
+Posteriormente se ha procedido a estudiar estadísticamente los datos de velocidad de todos los registros, para lo cual se han aplicado las fórmulas de media:   **$\frac{\sum_{i=1}^{n} X_i}{N}$**    y de la desviación típica: **$\sqrt{\frac{\sum_{i=1}^{n} (X_i - \tilde x)^2}{N}}$**    obteniendo los valores de `r mean(data$speed)` para la media $\tilde x$  y `r sd(data$speed)` para la desviación típica $\sigma$. Como complemento a esta información se ha realizado un diagrama de cajas con la fución `plot` mostrando la velocidad en función del color del coche y que se muestra a continuación:
 
 ```{r, echo = FALSE}
 plot (x = data$Color, y = data$speed, xlab="Color del coche",
