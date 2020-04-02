@@ -1,0 +1,301 @@
+---
+title: "Práctica 3: Usando datos climáticos"
+author: "Nikolai Shurupov y Adrián Vicioso Matrat"
+date: "2/4/2020"
+output:
+  word_document:
+    reference_docx: docx_template.docx
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+En esta práctica ocuparemos la labor de la **adquisición** y el **manejo** de datos climáticos de manera totalmente **reproducible**. Para ello se utilizarán los datos climáticos disponibles en la base de datos de **CHELSA**, a la accederemos mediante una función. En esta base de datos se puede obtener una gran diversidad de datos. Estos datos están clasificados de una determinada manera que condicionará el cómo acceder a ellos. A modo de resumen, se pueden encontrar **datos climáticos** y **variables bioclimáticas** para el **presente**, el **pasado** (último máximo glacial) y el **futuro** (del Coupled Model Intercomparison Project 5 -CMIP5-). Mientras que para las variables climáticas tenemos **datos mensuales**, las **19 bioclimaticas** son para un determinado **año**. Es por ello que la estructuración de nombres para cada uno es distinta, lo que implica que para acceder a estos dos tipos de datos son necesarios métodos distintos.
+
+Si bien es cierto que existe un paquete que permite obtener datos únicamente bioclimáticos con una función llamada **'get_chelsa'**, este paquete presenta ciertos problemas y en el momento de eaboración de esta práctica está **obsoleto** y requiere actualizarse a los cambios realizados en los servidores de CHELSA. Debido a esto, utilizando parte del código de la función 'get_chelsa', actualizándolo y corrigiendo varios aspectos, se han construido **dos funciones**. Una se encarga de la descarga de la variables bioclimáticas y una segunda que descarga datos climáticos estándar.
+
+Dado que en el trabajo final se va a trabajar con las 19 variables bioclimáticas, en esta práctica se usarán sólo los datos **climáticos estándar**. Dentro de éstas variables tenemos 4 posibilidades: **precipitación (mm), temperatura media, máxima y mínima**, para cada mes del año. La función que se encargará de la descarga se ha llamado **'chelsa_climate'**. En ella es necesario introducir qué periodo temporal queremos: pasado, presente o futuro. Junto a esto también se introducirá la variable o variables de interés, que han sido antes mencionadas y los meses para los que las queremos. Junto a esto, en función de si queremos datos de futuro o pasado se deben introducir **parámetros extra**. Para el caso de las variables pasadas es necesario indtroducir el **'model_string'**, es decir, el modelo con el que se han elaborado. Las opciones son :"CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR", "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3".
+
+Para el caso de las variables futuras, además del modelo es necesario introducir el **escenario** y el **periodo de años futuros**. En este caso los modelos disponibles son: "ACCESS1-0", "BNU-ESM", "CCSM4", "CESM1-BGC", "CESM1-CAM5", "CMCC-CMS", "CMCC-CM","CNRM-CM5", "CSIRO-Mk3-6-0", "CanESM2", "FGOALS-g2", "FIO-ESM", "GFDL-CM3", "GFDL-ESM2G","GFDL-ESM2M", "GISS-E2-H-CC", "GISS-E2-H", "GISS-E2-R-CC", "GISS-E2-R", "HadGEM2-AO", "HadGEM2-CC","IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR", "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4". Para el segundo argumento necesario, **'scenario_string'** las opciones son "rcp26", "rcp45", "rcp60", "rcp85", que corresponde a la 'gravedad' de la situación futura. Por último es necesario definir el argumento del rango de años a evaluar, **'future_years'** que pueden ser dos opciones: "2041-2060", "2061-2080".
+
+Por último, detacar que el **directorio** para alojar las descargas se puede especifical con el argumento **'output_dir'**, pero de no hacerlo se utilizará el directorio de trabajo actual y se generarán carpetas dentro de el que albergará cada tipo de descarga.
+
+# Análisis de datos climáticos en Andalucía
+
+Hecha esta introducción al procedimiento de obtención de los datos se va a proceder a trabajar con alguno de ellos. Se ha escogido estudiar la comunidad aútonoma de Andalucía, pues es una zona bastante heterogénea climáticamente hablando y además existe una gran actividad agrícola. Resulta interesante estudiar la evolución en la precipitación y en las temperaturas máximas y la relación entre éstas, así como ver que tendencias de futuro tienen. Para abordar esto, primero se ha procedido a descargar los datos necesarios.
+Lo primero que es necesario para abordar el análisis es cargar los paquetes que serán necesarios:
+
+
+```{r, echo = TRUE, results='hide', warning = FALSE, message = FALSE, error = FALSE}
+library(sf)
+library(dplyr)
+library(raster)
+library(rgdal)
+library(maptools)
+library(jsonlite)
+library(mapview)
+library(fastmap)
+library(tmap)
+library(rnaturalearth)
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
+#' Creacion de una funcion propia para la descarga de archivos climatológicos del directorio de CHELSA #####
+
+#'  Esta función solo sirve para descargar datos climáticos del directorio de CHELSA, siendo éstos 4:
+#'  precipitación, temperaturas medias, temperaturas máximas y temperaturas mínimas, para cada mes del año.
+
+#' modelo general de circulacion!!
+#' 
+#' hacer una media con varias predicciones y una medida de error!!
+#' 
+#' el escenario coger el que se quiera, pero solo 1
+  
+# definicion de la funcion y sus argumentos
+
+chelsa_climate <- function(period, variable, meses = 1:12, model_string,
+                            scenario_string, future_years, output_dir) {
+  
+  directorio_base <- "https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/"
+  
+  stopifnot(meses %in% 1:12, period %in% c("present", "future", "past"),
+            variable %in% c("prec", "temp", "tmax", "tmin"))
+  
+  # se transforma la lista de numero de variables a una lista que vaya de 01 a 19 con tipo character 
+  mesesf <- sprintf("%02d", meses)
+  stopifnot(mesesf %in% sprintf("%02d", 1:12))
+  
+  
+  # se establece el directorio por defecto
+  if (missing(output_dir))
+  {
+    output_dir <- getwd()
+  } else {
+    dir.create(output_dir, recursive=TRUE, showWarnings=FALSE)
+  }
+  
+  
+  ########### PASADO #############
+  
+  if (period == "past") {
+    
+    path <- paste0(normalizePath(output_dir), "/mensuales_pasado_", variable, "/")
+    dir.create(path, recursive=TRUE, showWarnings=FALSE)
+    
+    stopifnot(model_string %in% c("CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR",
+                                  "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3"))
+    
+    # es necesario incluir las pequeñas diferencias en los nombre de cada variable,
+    # para el caso, algunas van numeradas de 1 a 12 o otras de 01 a 12.
+    if (variable == "temp") {
+      meses_seleccion = mesesf
+    } else { meses_seleccion = meses }
+    
+    
+    # igual que en el caso anterior, es una inclusión de una excepción
+    # que existe para la variable de temperatura media
+    if (variable!= "temp") {
+      bonus = "_1"
+    } else { bonus = "" }
+    
+    
+    # se reenombra la variable porque en este caso, le han puesto otro nombre a los
+    # archivos
+    if (variable == "temp") {
+      variable = "tmean"
+    }
+    
+    
+    # bucle que itera sobre los datos introducidos
+    for (i in meses_seleccion) {
+      
+      for (model_s in model_string) {
+        
+        # se establece el nombre que tiene que tener segun lo introducido
+        archive_name <- paste("CHELSA_PMIP_", model_s,"_", variable, "_", i, bonus, ".tif", sep = "")
+        
+        # se establece la url exacta que contiene el archivo
+        layer_url <- paste(directorio_base, "pmip3/", variable, "/", archive_name, sep = "")
+        
+        # se establece con que nombre se guardará
+        file_path <- paste0(path, archive_name)
+        
+        # se comprueba que no exista ya el archivo
+        if (!file.exists(file_path)) {
+          
+          # se descarga, siendo muy importante el modo (wb), de no ser asi los archivos descargados no podran ser
+          # manejados
+          download.file(layer_url, destfile = file_path, mode = "wb")
+        }
+      }
+    }
+    # se devuelve un stack de los raster dentro del directorio donde se han guardado las descargas
+    return(stack(list.files(path, full.names = TRUE)))
+  }
+  
+  
+  
+  
+  ####### PRESENTE ###########
+  
+  if (period == "present") {
+    
+    # crear directorio contenedor
+    path <- paste0(normalizePath(output_dir), "/mensuales_presente_", variable, "/")
+    dir.create(path, recursive=TRUE, showWarnings=FALSE)
+    
+    # igual que anteriormente, esto es el control de las expeciones que hay en 
+    # determinados nombres
+    
+    if (variable != "prec") {
+      bonus = "_1979-2013"
+      bonus2 = "temp/integer/"
+    } else {
+      bonus = ""
+      bonus2 = ""
+      }
+    
+    
+    # algunas variables cambian de nombre en los archivos y aquí, de nuevo,
+    # se controlan estas excepciones
+    
+    if (variable == "prec"){
+      variable2 = variable
+    }
+    if (variable == "temp"){
+      variable2 = "temp10"
+    }
+    if (variable == "tmax"){
+      variable2 = "tmax10"
+    }
+    if (variable == "tmin"){
+      variable2 = "tmin10"
+    }
+
+  
+    # iterar sobre los meses a descargar
+    for (m in mesesf) {
+      
+      # nombre
+      archive_name <- paste("CHELSA_", variable2, "_", m, bonus, "_V1.2_land.tif", sep = "")
+      
+      # dirección exacta
+        
+      layer_url <- paste(directorio_base, "climatologies/",bonus2, variable, "/", archive_name, sep = "")
+      
+      # nombre de destino
+      file_path <- paste0(path, archive_name)
+      
+      if (!file.exists(file_path))
+      {
+        # descarga
+        download.file(layer_url, destfile = file_path, mode = "wb")
+      }
+    }
+    return(stack(list.files(path, full.names = TRUE)))
+  }
+  
+  
+  
+  ######### FUTURO #########
+  
+  # ***las opraciones se estructuran de la misma manera que para el caso de las variables pasadas***
+  
+  # definición de las operaciones para descargar archivos predictivos sobre las variables bioclimaticas
+  if (period == "future") {
+    
+    # comprobacion de la correcion en los datos introducidos
+    stopifnot(future_years %in% c("2041-2060", "2061-2080"), scenario_string %in% c("rcp26", "rcp45", "rcp60", "rcp85"),
+              model_string %in% c("ACCESS1-0", "BNU-ESM", "CCSM4", "CESM1-BGC", "CESM1-CAM5", "CMCC-CMS", "CMCC-CM",
+                                  "CNRM-CM5", "CSIRO-Mk3-6-0", "CanESM2", "FGOALS-g2", "FIO-ESM", "GFDL-CM3", "GFDL-ESM2G",
+                                  "GFDL-ESM2M", "GISS-E2-H-CC", "GISS-E2-H", "GISS-E2-R-CC", "GISS-E2-R", "HadGEM2-AO", "HadGEM2-CC",
+                                  "IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR",
+                                  "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4"))
+    
+    path <- paste0(normalizePath(output_dir), "/mensuales_futuro_", variable, "/")
+    dir.create(path, recursive=TRUE, showWarnings=FALSE)
+    
+    
+    # control de excepciones, igual que anteriormente
+    if (variable == "prec"){
+      bonus=""
+    } else { bonus = "_V1.2" }
+    
+    
+    # control de excepciones, igual que anteriormente
+    if (variable == "prec"){
+      variable2 = "pr"
+    }
+    if (variable == "temp"){
+      variable2 = "tas"
+    }
+    if (variable == "tmax"){
+      variable2 = "tasmax"
+    }
+    if (variable == "tmin"){
+      variable2 = "tasmin"
+    }
+    
+    
+    for (future_y in future_years) # iteracion sobre los años futuros introducidos
+    {
+      for (scenario_s in scenario_string) # iteracion sobre los escenarios RCP 
+      {
+        for (model_s in model_string) # iteracion sobre los modelos climaticos
+        {
+          for (i in meses) # iteracion sobre los meses de interes
+          {
+
+            archive_name <- paste("CHELSA_", variable2, "_mon_", model_s, "_", scenario_s, "_r1i1p1_g025.nc_", as.character(i),
+                                  "_", future_y, bonus, ".tif", sep = "")
+            
+            layer_url <- paste(directorio_base, "cmip5/", future_y, "/", variable, "/", archive_name, sep = "")
+            
+            file_path <- paste0(path, archive_name)
+            
+          
+            if (!file.exists(file_path))
+            {
+              download.file(layer_url, destfile = file_path, mode = "wb")
+              
+            }
+          } 
+        } 
+      }
+    }
+    return(stack(list.files(path, full.names = TRUE)))
+  }
+}
+
+
+```
+
+Una vez se han cargado los paquetes necesarios se procederá a utilizar la función para descargar los datos que se necesitan:
+
+```{r}
+
+andalucia <- ne_states(returnclass = "sf", country = 'spain') %>%
+  dplyr::select("region", "geometry") %>% 
+  filter(region == "Andalucía")
+
+precip_actual <- chelsa_climate(period = "present",variable = 'prec', meses = 1:12)
+
+precip_futura <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
+                                scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+
+tmax_actual <- chelsa_climate(period = "present", variable = 'tmax', meses = 1:12)
+
+tmax_futura <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
+                              scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+
+p_anual_crop <- crop(precip_actual, andalucia)
+
+
+p_anual_mask <- mask(p_anual_crop, andalucia)
+
+plot(p_anual_mask)
+
+```
+
