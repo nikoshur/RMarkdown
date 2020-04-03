@@ -1,9 +1,10 @@
-########### Creacion de una funcion propia para la descarga de archivos del directorio de CHELSA #############
+#' Creacion de una funcion propia para la descarga de archivos de datos bioclimáaticos del directorio de CHELSA #####
 
-#' Esta funcion ha reutilizado part del código de otra función, 'get_chelsa', que tenia ciertos
+#' Esta funcion ha reutilizado parte del código de otra función, 'get_chelsa', que tenia ciertos
 #' problemas en cuanto a nombre de directorios, ya que estos han cambiado desde que esta
 #' funcion fue definida y otros errores, derivados del método de descarga así como de la definición
-#' de las rutas, mediant la librería glue, que no funcionan correctamente.
+#' de las rutas, mediante la librería glue, que no funcionan correctamente. Esta función solo sirve para
+#' la descarga de variables bioclimáticas. 
 
 #' @param period de tipo character, que define el periodo que queremos descargar, siendo las opciones posibles UNA en c("past", "present", "future").
 
@@ -75,13 +76,7 @@ chelsa_download <- function(period = "present", layer = 1:19, model_string,
     # se comprueba que los datos introducidos sean los correctos
     stopifnot(model_string %in% c("CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR",
                                   "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3"))
-    
-    # se establece el escenario por defecto
-    if (missing(scenario_string))
-    {
-      cat("Argument scenario_string missing. Assuming pmip3 scenario", "\n")
-      scenario_string <- "pmip3"
-    }
+
     
     # se establece la carpeta donde se guardarán los archivos
     path <- paste0(normalizePath(output_dir), "/past/")
@@ -138,7 +133,7 @@ chelsa_download <- function(period = "present", layer = 1:19, model_string,
       # dirección exacta
       layer_url <- paste(directorio_base, "bioclim/integer/", archive_name, sep = "")
       
-      # nombre
+      # nombre de destino
       file_path <- paste0(path, archive_name)
       
       if (!file.exists(file_path))
@@ -175,13 +170,13 @@ chelsa_download <- function(period = "present", layer = 1:19, model_string,
     # iteracion sobre los datos introducidos, primero en los años futuros, luego sobre los escenarios, sobre los modelos y por 
     # ultimo sobre las variables
     
-    for (future_y in future_years) # Loop over the future years
+    for (future_y in future_years) # iteracion sobre los años futuros introducidos
     {
-      for (scenario_s in scenario_string) # Loop over RCP scenarios
+      for (scenario_s in scenario_string) # iteracion sobre los escenarios RCP 
       {
-        for (model_s in model_string) # Loop over climate models
+        for (model_s in model_string) # iteracion sobre los modelos climaticos
         {
-          for (i in layer) # Loop over bioclim layers
+          for (i in layer) # iteracion sobre las distintas variables bioclimaticas
           {
             
             archive_name <- paste("CHELSA_bio_mon_", model_s, "_", scenario_s, "_r1i1p1_g025.nc_", as.character(i),
@@ -206,5 +201,4 @@ chelsa_download <- function(period = "present", layer = 1:19, model_string,
 }
 
 
-
-
+bio_pasado <- chelsa_download(period = "past", layer = 1:19, model_string = "MIROC-ESM", scenario_string = "pmip3", output_dir)
