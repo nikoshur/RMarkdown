@@ -18,7 +18,7 @@ Si bien es cierto que existe un paquete que permite obtener datos únicamente bi
 
 Dado que en el trabajo final se va a trabajar con las 19 variables bioclimáticas, en esta práctica se usarán sólo los datos **climáticos estándar**. Dentro de éstas variables tenemos 4 posibilidades: **precipitación (mm), temperatura media, máxima y mínima**, para cada mes del año. La función que se encargará de la descarga se ha llamado **'chelsa_climate'**. En ella es necesario introducir qué periodo temporal queremos: pasado, presente o futuro. Junto a esto también se introducirá la variable o variables de interés, que han sido antes mencionadas y los meses para los que las queremos. Junto a esto, en función de si queremos datos de futuro o pasado se deben introducir **parámetros extra**. Para el caso de las variables pasadas es necesario indtroducir el **'model_string'**, es decir, el modelo con el que se han elaborado. Las opciones son :"CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR", "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3".
 
-Para el caso de las variables futuras, además del modelo es necesario introducir el **escenario** y el **periodo de años futuros**. En este caso los modelos disponibles son: "ACCESS1-0", "BNU-ESM", "CCSM4", "CESM1-BGC", "CESM1-CAM5", "CMCC-CMS", "CMCC-CM","CNRM-CM5", "CSIRO-Mk3-6-0", "CanESM2", "FGOALS-g2", "FIO-ESM", "GFDL-CM3", "GFDL-ESM2G","GFDL-ESM2M", "GISS-E2-H-CC", "GISS-E2-H", "GISS-E2-R-CC", "GISS-E2-R", "HadGEM2-AO", "HadGEM2-CC","IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR", "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4". Para el segundo argumento necesario, **'scenario_string'** las opciones son "rcp26", "rcp45", "rcp60", "rcp85", que corresponde a la 'gravedad' de la situación futura. Por último es necesario definir el argumento del rango de años a evaluar, **'future_years'** que pueden ser dos opciones: "2041-2060", "2061-2080".
+Para el caso de las variables futuras, además del modelo es necesario introducir el **escenario** y el **periodo de años futuros**. En este caso los modelos disponibles son: "ACCESS1-0", "BNU-ESM", "CCSM4", "CESM1-BGC", "CESM1-CAM5", "CMCC-CMS", "CMCC-CM","CNRM-CM5", "CSIRO-Mk3-6-0", "CanESM2", "FGOALS-g2", "FIO-ESM", "GFDL-CM3", "GFDL-ESM2G","GFDL-ESM2M", "GISS-E2-H-CC", "GISS-E2-H", "GISS-E2-R-CC", "GISS-E2-R", "HadGEM2-AO", "HadGEM2-CC","IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR", "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4". Para el segundo argumento necesario, **'scenario_string'** las opciones son "rcp26", "rcp45", "rcp60", "rcp85", que corresponde a la 'gravedad' de la situación futura respecto al nivel de emisiones de efecto invernadero. Por último es necesario definir el argumento del rango de años a evaluar, **'future_years'** que pueden ser dos opciones: "2041-2060", "2061-2080".
 
 Por último, detacar que el **directorio** para alojar las descargas se puede especifical con el argumento **'output_dir'**, pero de no hacerlo se utilizará el directorio de trabajo actual y se generarán carpetas dentro de el que albergará cada tipo de descarga.
 
@@ -276,26 +276,52 @@ Una vez se han cargado los paquetes necesarios se procederá a utilizar la funci
 
 ```{r}
 
+precip_actual <- chelsa_climate(period = "present",variable = 'prec', meses = 1:12)
+
+precip_futura_CCSM4 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
+                                scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+
+precip_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
+                                scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
+
+tmax_actual <- chelsa_climate(period = "present", variable = 'tmax', meses = 1:12)
+
+tmax_futura_CCSM4 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
+                              scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+
+tmax_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
+                              scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
+
+```
+
+Como puede observarse se han escogido las dos variables anteriormente comentados. Para el caso de predicciones a futuro se han escogido dos modelos distintos, ACCESS-0 y CCSM4, para comparar sus resultados. Junto a esto el rango de años futuros escodigos es el primero de los disponibles, de 2041 a 2060, con un escenario rcp45, que es un escenario de intensidad de las emisiones media-leve.
+Estos datos cubren la totalidad del planeta, por lo que es necesario extreaer información sólo para la zona que nos interesa:
+
+```{r}
+
 andalucia <- ne_states(returnclass = "sf", country = 'spain') %>%
   dplyr::select("region", "geometry") %>% 
   filter(region == "Andalucía")
 
-precip_actual <- chelsa_climate(period = "present",variable = 'prec', meses = 1:12)
+precip_actual_crop <- crop(precip_actual, andalucia)
+precip_futura_CCSM4_crop <- crop(precip_futura_CCSM4, andalucia)
+precip_futura_ACCESS_0_crop <- crop(precip_futura_ACCESS_0, andalucia)
 
-precip_futura <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
-                                scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+tmax_actual_crop <- crop(tmax_actual, andalucia)
+tmax_futura_CCSM4_crop <- crop(tmax_futura_CCSM4, andalucia)
+tmax_futura_ACCESS_0_crop <- crop(tmax_futura_ACCESS_0, andalucia)
 
-tmax_actual <- chelsa_climate(period = "present", variable = 'tmax', meses = 1:12)
+```
+Además de haber modificado la extensión que nos interesa mediante la función crop, también será necesario hacer una máscara, para que se muestre sólo la zona de andalucia:
+```{r}
 
-tmax_futura <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
-                              scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+precip_actual_mask <- mask(precip_actual_crop, andalucia)
+precip_futura_CCSM4_mask <- mask(precip_futura_CCSM4_crop, andalucia)
+precip_futura_ACCESS_0_mask <- mask(precip_futura_ACCESS_0_crop, andalucia)
 
-p_anual_crop <- crop(precip_actual, andalucia)
-
-
-p_anual_mask <- mask(p_anual_crop, andalucia)
-
-plot(p_anual_mask)
+tmax_actual_mask <- mask(tmax_actual_crop, andalucia)
+tmax_futura_CCSM4_mask <- mask(tmax_futura_CCSM4_crop, andalucia)
+tmax_futura_ACCESS_0_mask <- mask(tmax_futura_ACCESS_0_crop, andalucia)
 
 ```
 
