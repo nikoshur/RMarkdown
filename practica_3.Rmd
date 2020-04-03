@@ -5,6 +5,9 @@ date: "2/4/2020"
 output:
   word_document:
     reference_docx: docx_template.docx
+bibliography: bibliografia.bib
+link-citations: yes
+csl: apa-no-issue-numbers.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -14,18 +17,29 @@ knitr::opts_chunk$set(echo = TRUE)
 
 En esta práctica ocuparemos la labor de la **adquisición** y el **manejo** de datos climáticos de manera totalmente **reproducible**. Para ello se utilizarán los datos climáticos disponibles en la base de datos de **CHELSA**, a la accederemos mediante una función. En esta base de datos se puede obtener una gran diversidad de datos. Estos datos están clasificados de una determinada manera que condicionará el cómo acceder a ellos. A modo de resumen, se pueden encontrar **datos climáticos** y **variables bioclimáticas** para el **presente**, el **pasado** (último máximo glacial) y el **futuro** (del Coupled Model Intercomparison Project 5 -CMIP5-). Mientras que para las variables climáticas tenemos **datos mensuales**, las **19 bioclimaticas** son para un determinado **año**. Es por ello que la estructuración de nombres para cada uno es distinta, lo que implica que para acceder a estos dos tipos de datos son necesarios métodos distintos.
 
-Si bien es cierto que existe un paquete que permite obtener datos únicamente bioclimáticos con una función llamada **'get_chelsa'**, este paquete presenta ciertos problemas y en el momento de eaboración de esta práctica está **obsoleto** y requiere actualizarse a los cambios realizados en los servidores de CHELSA. Debido a esto, utilizando parte del código de la función 'get_chelsa', actualizándolo y corrigiendo varios aspectos, se han construido **dos funciones**. Una se encarga de la descarga de la variables bioclimáticas y una segunda que descarga datos climáticos estándar.
+Si bien es cierto que existe un paquete que permite obtener datos únicamente bioclimáticos con una función llamada **'get_chelsa'**, este paquete presenta ciertos problemas y en el momento de elaboración de esta práctica está **obsoleto** y requiere actualizarse a los cambios realizados en los servidores de CHELSA. Debido a esto, utilizando parte del código de la función 'get_chelsa', actualizándolo y corrigiendo varios aspectos, se han construido **dos funciones**. Una se encarga de la descarga de las variables bioclimáticas y una segunda que descarga datos climáticos estándar.
 
-Dado que en el trabajo final se va a trabajar con las 19 variables bioclimáticas, en esta práctica se usarán sólo los datos **climáticos estándar**. Dentro de éstas variables tenemos 4 posibilidades: **precipitación (mm), temperatura media, máxima y mínima**, para cada mes del año. La función que se encargará de la descarga se ha llamado **'chelsa_climate'**. En ella es necesario introducir qué periodo temporal queremos: pasado, presente o futuro. Junto a esto también se introducirá la variable o variables de interés, que han sido antes mencionadas y los meses para los que las queremos. Junto a esto, en función de si queremos datos de futuro o pasado se deben introducir **parámetros extra**. Para el caso de las variables pasadas es necesario indtroducir el **'model_string'**, es decir, el modelo con el que se han elaborado. Las opciones son :"CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR", "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3".
+Dado que en el trabajo final se va a trabajar con las 19 variables bioclimáticas, en esta práctica se usarán sólo los datos **climáticos estándar**. Dentro de estas variables tenemos 4 posibilidades: **precipitación (mm), temperatura media, máxima y mínima**, para cada mes del año. La función que se encargará de la descarga se ha llamado **'chelsa_climate'**. En ella es necesario introducir qué periodo temporal queremos: pasado, presente o futuro. Junto a esto también se introducirá la variable o variables de interés, que han sido antes mencionadas y los meses para los que las queremos. Junto a esto, en función de si queremos datos de futuro o pasado se deben introducir **parámetros extra**. Para el caso de las variables pasadas es necesario introducir el **'model_string'**, es decir, el modelo con el que se han elaborado. Las opciones son :"CCSM4", "CNRM-CM5", "FGOALS-g2", "IPSL-CM5A-LR", "MIROC-ESM", "MPI-ESM-P", "MRI-CGCM3".
+
+\pagebreak
 
 Para el caso de las variables futuras, además del modelo es necesario introducir el **escenario** y el **periodo de años futuros**. En este caso los modelos disponibles son: "ACCESS1-0", "BNU-ESM", "CCSM4", "CESM1-BGC", "CESM1-CAM5", "CMCC-CMS", "CMCC-CM","CNRM-CM5", "CSIRO-Mk3-6-0", "CanESM2", "FGOALS-g2", "FIO-ESM", "GFDL-CM3", "GFDL-ESM2G","GFDL-ESM2M", "GISS-E2-H-CC", "GISS-E2-H", "GISS-E2-R-CC", "GISS-E2-R", "HadGEM2-AO", "HadGEM2-CC","IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR", "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4". Para el segundo argumento necesario, **'scenario_string'** las opciones son "rcp26", "rcp45", "rcp60", "rcp85", que corresponde a la 'gravedad' de la situación futura respecto al nivel de emisiones de efecto invernadero. Por último es necesario definir el argumento del rango de años a evaluar, **'future_years'** que pueden ser dos opciones: "2041-2060", "2061-2080".
 
-Por último, detacar que el **directorio** para alojar las descargas se puede especifical con el argumento **'output_dir'**, pero de no hacerlo se utilizará el directorio de trabajo actual y se generarán carpetas dentro de el que albergará cada tipo de descarga.
+Por último, destacar que el **directorio** para alojar las descargas se puede especificar con el argumento **'output_dir'**, pero de no hacerlo se utilizará el directorio de trabajo actual y se generarán carpetas dentro de el que albergará cada tipo de descarga. Si ya tiene los datos descargados, podrá introducir el directorio en el que están, sin embargo tenga en cuenta la estructura de nombres de carpetas que esta función le asigna a los rásters de salida, ya que tiene que tener el mismo nombre en su directorio para que la función los detecte.Para los datos descargados en esta práctica, las carpetas donde la función guardará los archivos (y comprobará que no existan ya) tienen los nombres de: 
+
+## mensuales_presente_prec
+## mensuales_futuro_prec_CCSM4
+## mensuales_futuro_prec_ACCESS1-0
+## mensuales_presente_tmax
+## mensuales_futuro_tmax_CCSM4
+## mensuales_futuro_tmax_ACCESS1-0
 
 # Análisis de datos climáticos en Andalucía
 
-Hecha esta introducción al procedimiento de obtención de los datos se va a proceder a trabajar con alguno de ellos. Se ha escogido estudiar la comunidad aútonoma de Andalucía, pues es una zona bastante heterogénea climáticamente hablando y además existe una gran actividad agrícola. Resulta interesante estudiar la evolución en la precipitación y en las temperaturas máximas y la relación entre éstas, así como ver que tendencias de futuro tienen. Para abordar esto, primero se ha procedido a descargar los datos necesarios.
+Hecha esta introducción al procedimiento de obtención de los datos se va a proceder a trabajar con alguno de ellos. Se ha escogido estudiar la comunidad autónoma de Andalucía, pues es una zona bastante heterogénea climáticamente hablando y además existe una gran actividad agrícola. Resulta interesante estudiar la evolución en la precipitación y en las temperaturas máximas y la relación entre éstas, así como ver que tendencias de futuro tienen. Para abordar esto, primero se ha procedido a descargar los datos necesarios.
 Lo primero que es necesario para abordar el análisis es cargar los paquetes que serán necesarios:
+
+
 
 
 ```{r, echo = TRUE, results='hide', warning = FALSE, message = FALSE, error = FALSE}
@@ -39,6 +53,10 @@ library(mapview)
 library(fastmap)
 library(tmap)
 library(rnaturalearth)
+library(flextable)
+library(officer)
+library(shinyjs)
+library(tmaptools)
 ```
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
@@ -46,6 +64,39 @@ library(rnaturalearth)
 
 #'  Esta función solo sirve para descargar datos climáticos del directorio de CHELSA, siendo éstos 4:
 #'  precipitación, temperaturas medias, temperaturas máximas y temperaturas mínimas, para cada mes del año.
+
+
+#' @param period de tipo character, que define el periodo que queremos descargar, siendo las opciones posibles UNA en c("past", "present", "future").
+
+#' @param variable tipo carácter, pudiendo elegir solo una: temp (temperatura media), tmax (máxima), tmin (mínima), prec (precipitación (mm))
+
+#' @param meses tipo numérico, seleccionar los meses. se pueden seleccionar hasta 12, siendo por defecto todos los meses,
+#' para descargar una en específico usar {meses = 1, meses = 2:5, etc}
+
+#' @param model_string de tipo character, define que tipo de modelo climático se necesita, para periodos PASADOS o FUTUROS, por lo que
+#' solo esta disponible para este tipo de archivos
+
+#' @param scenario_string de tipo character, define el escenario. Las opciones disponibles son:"rcp26", "rcp45", "rcp60", "rcp85", para escenatios FUTUROS,
+#' y "pmip3" para escenarios pasados.
+#'
+#' @param future_years de tipo character, que define el periodo de escenario futuro, por lo que solo se podrá usar para descargar este tipo de archivos
+#' las opciones disponibles son "2041-2060" y "2061-2080".
+
+#' @param output_dir de tipo character, define el directorio para guardar los archivos, siendo por defecto el getwd()
+
+
+#' @examples ejemplos de descarga de datos de distintos tipos:
+
+#'          presente <- chelsa_download(period = "present", variable = "prec", layer = 2)
+
+#'          pasado <- chelsa_download(period = "past",variable = "tmin", meses = 1:12, model_string = "CCSM4")
+
+#'          futuro <- chelsa_download(period = "future",variable = "tmax", meses = 1:6, future_years = "2041-2060", scenario_string = "rcp26", model_string = "BNU-ESM")
+
+
+#' @import Es necesario tener y cargar la libreria "raster" 
+#' install.packages("raster")
+#' library(raster)
 
 #' modelo general de circulacion!!
 #' 
@@ -214,7 +265,7 @@ chelsa_climate <- function(period, variable, meses = 1:12, model_string,
                                   "IPSL-CM5A-LR", "IPSL-CM5A-MR", "MIROC-ESM-CHEM", "MIROC-ESM", "MIROC5", "MPI-ESM-LR",
                                   "MPI-ESM-MR", "MRI-CGCM3", "MRI-ESM1", "NorESM1-M", "bcc-csm1-1", "inmcm4"))
     
-    path <- paste0(normalizePath(output_dir), "/mensuales_futuro_", variable, "/")
+    path <- paste0(normalizePath(output_dir), "/mensuales_futuro_", variable, "_", model_string, "/", sep = "")
     dir.create(path, recursive=TRUE, showWarnings=FALSE)
     
     
@@ -269,8 +320,9 @@ chelsa_climate <- function(period, variable, meses = 1:12, model_string,
   }
 }
 
-
 ```
+
+
 
 Una vez se han cargado los paquetes necesarios se procederá a utilizar la función para descargar los datos que se necesitan:
 
@@ -278,23 +330,21 @@ Una vez se han cargado los paquetes necesarios se procederá a utilizar la funci
 
 precip_actual <- chelsa_climate(period = "present",variable = 'prec', meses = 1:12)
 
-precip_futura_CCSM4 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
-                                scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+precip_futura_CCSM4 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12, scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
 
-precip_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12,
-                                scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
+precip_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "prec", meses = 1:12, scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
 
 tmax_actual <- chelsa_climate(period = "present", variable = 'tmax', meses = 1:12)
 
-tmax_futura_CCSM4 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
-                              scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
+tmax_futura_CCSM4 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12, scenario_string = "rcp45", model_string = "CCSM4", future_years = "2041-2060")
 
-tmax_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12,
-                              scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
+tmax_futura_ACCESS_0 <- chelsa_climate(period = "future", variable = "tmax", meses = 1:12, scenario_string = "rcp45", model_string = "ACCESS1-0", future_years = "2041-2060")
 
 ```
 
-Como puede observarse se han escogido las dos variables anteriormente comentados. Para el caso de predicciones a futuro se han escogido dos modelos distintos, ACCESS-0 y CCSM4, para comparar sus resultados. Junto a esto el rango de años futuros escodigos es el primero de los disponibles, de 2041 a 2060, con un escenario rcp45, que es un escenario de intensidad de las emisiones media-leve.
+
+
+Como puede observarse se han escogido las dos variables anteriormente comentados. Para el caso de predicciones a futuro se han escogido dos modelos distintos, ACCESS-0 y CCSM4, para comparar sus resultados. Junto a esto el rango de años futuros escogidos  es el primero de los disponibles, de 2041 a 2060, con un escenario rcp45, que es un escenario de intensidad de las emisiones medio-leve.
 Estos datos cubren la totalidad del planeta, por lo que es necesario extreaer información sólo para la zona que nos interesa:
 
 ```{r}
@@ -312,7 +362,10 @@ tmax_futura_CCSM4_crop <- crop(tmax_futura_CCSM4, andalucia)
 tmax_futura_ACCESS_0_crop <- crop(tmax_futura_ACCESS_0, andalucia)
 
 ```
-Además de haber modificado la extensión que nos interesa mediante la función crop, también será necesario hacer una máscara, para que se muestre sólo la zona de andalucia:
+
+
+
+Además de haber modificado la extensión que nos interesa mediante la función crop, también será necesario hacer una máscara, para que se muestre sólo la zona de andalucia, es decir, su contorno.
 ```{r}
 
 precip_actual_mask <- mask(precip_actual_crop, andalucia)
@@ -324,4 +377,275 @@ tmax_futura_CCSM4_mask <- mask(tmax_futura_CCSM4_crop, andalucia)
 tmax_futura_ACCESS_0_mask <- mask(tmax_futura_ACCESS_0_crop, andalucia)
 
 ```
+
+
+
+Habiendo definido estas variables es posible comenzar a hacer cálculos y análisis con los paquetes de ráster que están guardados en cada variable. Lo primero que es necesario hacer es comprobar la estructura y formato de datos de estos rásters, para lo cual aplicaremos la función summary al primer elemento de cada uno de ellos (que correspondería a enero) ya que no hace falta comprobar todos los meses:
+
+```{r}
+
+summary(precip_actual_mask[[1]])
+summary(precip_futura_CCSM4_mask[[1]])
+summary(precip_futura_ACCESS_0_mask[[1]])
+
+summary(tmax_actual_mask[[1]])
+summary(tmax_futura_CCSM4_mask[[1]])
+summary(tmax_futura_ACCESS_0_mask[[1]])
+
+```
+
+\pagebreak
+
+A la vista de los resultados podemos ver que hay **ciertos problemas en esta información**. El primero es que para la información de la precipitación calculada con ambos modelos el valor mínimo es muy inferior al rango de valores de precipitación normal, además de negativo, lo que resulta ilógico. Esto se debe a que donde no hay información, en vez de haber NA hay valor mínimo de codificación de la imagen (15 bits). Esto dificultará la posterior visualización, por lo que será necesaria una **corrección**. Junto con esto vemos que los rangos de valores de temperatura están en una **variable desconocida**. Si atendemos al trabajo de @Karger2019 podremos ver que estos valores están en ºC/10, por lo que para convertirlos a Celsius y que el resultado de visualización sea más comprensible se procederá a realizar también una corrección en este aspecto, dividiendo el ráster por 10. Por último recalcar que la precipitación está en mm. Así mismo, la proyección y resolución de todos estos ráters es la siguiente:
+
+```{r}
+## Resolución
+
+res(precip_actual_mask)
+
+## sistema de coordenadas
+
+st_crs(precip_actual_mask)
+```
+
+
+
+Habiendo hecho estas observaciones, se ha procedido a calcular la temperatura máxima anual, y la precipitación total anual, junto con las correcciones antes mencionadas:
+
+```{r}
+
+#### Cálculo de variables de precipitación ####
+
+p_actual_sum <- calc(precip_actual_mask, fun = sum) 
+p_futura_CCSM4_sum <- calc(precip_futura_CCSM4_mask, fun = sum)
+p_futura_ACCESS_0_sum <- calc(precip_futura_ACCESS_0_mask, fun = sum)
+
+  ## correcciones
+
+p_futura_CCSM4_sum_corregida <- calc(p_futura_CCSM4_sum, fun = function(x){x[x < 0] <- NA; return(x)})
+p_futura_ACCESS_0_sum_corregida <- calc(p_futura_ACCESS_0_sum, fun = function(x){x[x < 0] <- NA; return(x)})
+
+#### Cálculo de variables de temperatura máaxima ####
+
+tmax_actual_anual <- calc(tmax_actual_mask, fun = max)
+tmax_futura_CCSM_anual <- calc(tmax_futura_CCSM4_mask, fun = max)
+tmax_futura_ACCESS_0_anual <- calc(tmax_futura_ACCESS_0_mask, fun = max)
+
+  ## correcciones
+
+tmax_actual_anual_corregida <- calc(tmax_actual_anual, function(x){x <- x/10; return (x)})
+tmax_futura_CCSM_anual_corregida <- calc(tmax_futura_CCSM_anual, function(x){x <- x/10; return (x)})
+tmax_futura_ACCESS_0_anual_corregida <- calc(tmax_futura_ACCESS_0_anual, function(x){x <- x/10; return (x)})
+
+
+```
+
+
+
+Teniendo todos los datos listos se procede a realizar la **valoración y análisis** de la información proporcionada:
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE}
+
+#### Calculo de estadisticas
+
+#### precipitacion
+
+p1_max <- cellStats(p_actual_sum, stat = max)
+p2_max <- cellStats(p_futura_CCSM4_sum_corregida, stat = max)
+p3_max <- cellStats(p_futura_ACCESS_0_sum_corregida, stat = max)
+
+p1_min <- cellStats(p_actual_sum, stat = min)
+p2_min <- cellStats(p_futura_CCSM4_sum_corregida, stat = min)
+p3_min <- cellStats(p_futura_ACCESS_0_sum_corregida, stat = min)
+
+p1_sd <- cellStats(p_actual_sum, stat = sd)
+p2_sd <- cellStats(p_futura_CCSM4_sum_corregida, stat = sd)
+p3_sd <- cellStats(p_futura_ACCESS_0_sum_corregida, stat = sd)
+
+
+#### temperatura maxima
+
+t1_max <- cellStats(tmax_actual_anual_corregida, stat = max)
+t2_max <- cellStats(tmax_futura_CCSM_anual_corregida, stat = max)
+t3_max <- cellStats(tmax_futura_ACCESS_0_anual_corregida, stat = max)
+
+
+t1_min <- cellStats(tmax_actual_anual_corregida, stat = min)
+t2_min <- cellStats(tmax_futura_CCSM_anual_corregida, stat = min)
+t3_min <- cellStats(tmax_futura_ACCESS_0_anual_corregida, stat = min)
+
+
+t1_sd <- cellStats(tmax_actual_anual_corregida, stat = sd)
+t2_sd <- cellStats(tmax_futura_CCSM_anual_corregida, stat = sd)
+t3_sd <- cellStats(tmax_futura_ACCESS_0_anual_corregida, stat = sd)
+
+
+Raster <- c("Precipitación anual actual (mm)","Precipitación anual futuro modelo CCSM4 (mm)",
+            "Precipitación anual futuro modelo ACCESS-0 (mm)", "Temperatura máxima anual actual (ºC)",
+            "Temperatura máxima anual futuro modelo CCSM4 (ºC)", "Temperatura máxima anual futuro modelo ACCESS-0 (ºC)" )
+
+Minimo <- c(p1_min, p2_min, p3_min, t1_min, t2_min, t3_min)
+
+Maximo <- c(p1_max, p2_max, p3_max, t1_max, t2_max, t3_max)
+  
+Desviacion_estandar <- c(p1_sd, p2_sd, p3_sd, t1_sd, t2_sd, t3_sd)
+
+
+tabla <- data.frame(Raster, Minimo, Maximo, Desviacion_estandar)
+
+
+ftable <- flextable(tabla) %>%
+  align(align = "center", part = "body") %>%
+  align(align = "center", part = "header") 
+
+ftable <- border_remove( ftable )
+
+big_b <- fp_border(color="gray50", width = 2)
+std_b <- fp_border(color="gray", style = "dashed")
+
+ftable <- vline( ftable, border = std_b, part = "all" )
+ftable <- vline_left( ftable, border = big_b, part = "all" )
+ftable <- vline_right( ftable, border = big_b, part = "all" )
+
+ftable <- hline( ftable, border = std_b )
+ftable <- hline_bottom( ftable, border = big_b )
+ftable <- hline_top( ftable, border = big_b, part = "all" )
+
+
+ftable <- italic(ftable, j = 1)
+ftable <- bg(ftable, bg = "#3c9c69", part = "header")
+ftable <- bg(ftable, bg = "#d3ffce", part = "body")
+ftable <- color(ftable, color = "white", part = "header")
+ftable <- color(ftable, color = "black")
+ftable <- bold(ftable, bold = TRUE)
+
+ftable <- autofit(ftable)
+
+ftable
+
+```
+
+Junto con esta tabla parece muy conveniente **visualizar** estas variables para comprender mejor **dónde y cómo** de distribuye cada una de las variables en el **espacio**, así como dónde hay más cambios respecto a los valores actuales y cuáles son las mayores **diferencias entre los dos modelos** utilizados.
+
+\pagebreak
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE, results='hide', include = FALSE}
+
+## esto es simplemente la definicion de las variables para las posteiores paletas,
+## se hace aparte para no incluir los resultados, ya que la funcion get brewer
+## siempre genera una salida de la paleta
+
+paleta_precipitacion <- get_brewer_pal("PuBu", n = 10, contrast = c(0.1, 1))
+
+paleta_temperaturas <- viridisLite::plasma(10, begin = 0.10, end = 0.80)
+
+```
+
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE, error = FALSE, results='hide'}
+
+## precipitacion
+
+tm_shape(p_actual_sum) +
+  tm_raster(breaks = c(0, 200, 400, 600, 800, 1000, 1200), title = "Precipitación(mm)", pal = paleta_precipitacion, n = 7) + 
+  tm_layout(main.title.size = 1, main.title = "Precipitación anual actual", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+tm_shape(p_futura_CCSM4_sum_corregida) +
+  tm_raster(breaks = c(0, 200, 400, 600, 800, 1000, 1200), title = "Precipitación(mm)", pal = paleta_precipitacion, n = 7) + 
+  tm_layout(main.title.size = 1, main.title = "Precipitación anual futura con la predicción CCSM4", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+tm_shape(p_futura_ACCESS_0_sum_corregida) +
+  tm_raster(breaks = c(0, 200, 400, 600, 800, 1000, 1200), title = "Precipitación(mm)", pal = paleta_precipitacion, n = 7) + 
+  tm_layout(main.title.size = 1, main.title = "Precipitación anual futura con la predicción ACCESS-0", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+
+
+
+## temperaturas maximas
+
+tm_shape(tmax_actual_anual_corregida) +
+  tm_raster(title = "Temperatura(ºC)", pal = paleta_temperaturas, n = 7, breaks = c(12,16,20,24,28,32,36,40)) + 
+  tm_layout(main.title.size = 1, main.title = "Temperaturas maximas anuales actuales", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+tm_shape(tmax_futura_CCSM_anual_corregida) +
+  tm_raster(title = "Temperatura(ºC)", pal = paleta_temperaturas, n = 7, breaks = c(12,16,20,24,28,32,36,40)) + 
+  tm_layout(main.title.size = 1, main.title = "Temperaturas maximas anuales con la predicción CCSM4", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+tm_shape(tmax_futura_ACCESS_0_anual_corregida) +
+  tm_raster(title = "Temperatura(ºC)", pal = paleta_temperaturas, n = 7, breaks = c(12,16,20,24,28,32,36,40)) + 
+  tm_layout(main.title.size = 1, main.title = "Temperaturas maximas anuales con la predicción ACCESS-0", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+```
+
+\pagebreak
+
+A la vista de los resultados podemos ver claramente que hay una bajada en la precipitación anual generalizada por toda la provincia, pero con especial intensidad en la parte central. Observando los dos modelos predictivos vemos que los resultados difieren para un mismo escenario. Los datos generados por CCSM4 apuntan a una caida en las precipitaciones anuales más severas que el ACCESS-0 que es por tanto más conservador en esta predicción.
+Por otro lado, las temperaturas máximas anuales, como no puede ser de otro modo, son mayores, y en este caso aumentan desde la costa hasta el interior de la provincia quedando pocas zonas sin este aumento. Sin embargo, si hacemos la comparación entre la información de los dos modelos, vemos que en este caso es el CCSM4 el modelo más conservador, pues los datos que ofrece sugieren un menor aumento en las temperaturas máximas que el que muestra ACCESS-0. Inequívocamente podemos ver que existe una relación entre el aumento de las temperaturas máximas anuales y la disminución de la precipitación anual. También se pone de manifiesto las claras diferencias que hay entre la información proporcionada por distintos modelos, pues estos internamente operan de muy distinta forma y por lo tanto existe diferencia entre los datos que cada uno genera. Debido a que no se puede decir cuál es mejor que otro, lo más idóneo es realizar un 'ensemble' de modelos, es decir, una media de los resultados de cada uno. Se muestra este proceso y los resultados a continuación:
+
+```{r}
+
+stack_precip <- stack (p_futura_CCSM4_sum_corregida, p_futura_ACCESS_0_sum_corregida)
+  
+stack_tmax <- stack (tmax_futura_CCSM_anual_corregida, tmax_futura_ACCESS_0_anual_corregida)
+
+ensemble_precip <- calc(stack_precip, fun = mean)
+
+ensemble_tmax <- calc(stack_tmax, fun = mean)
+```
+\pagebreak
+```{r echo = FALSE, warning = FALSE, message = FALSE, error = FALSE, results='hide'}
+
+tm_shape(ensemble_precip) +
+  tm_raster(breaks = c(0, 200, 400, 600, 800, 1000, 1200), title = "Precipitación(mm)", pal = paleta_precipitacion, n = 7) + 
+  tm_layout(main.title.size = 1, main.title = "Ensemble de ambos modelos para la precipitación", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+
+
+tm_shape(ensemble_tmax) +
+  tm_raster(title = "Temperatura(ºC)", pal = paleta_temperaturas, n = 7, breaks = c(12,16,20,24,28,32,36,40)) + 
+  tm_layout(main.title.size = 1, main.title = "Ensemble de ambos modelos para la temperatura máxima", legend.stack = TRUE,
+            legend.outside = TRUE,
+            legend.title.size = 0.8,
+            legend.text.size = 0.6,
+            legend.frame = TRUE)
+```
+
+
+\pagebreak
+
+# 5. Bibliografía
+
+<div id="refs"></div> 
+
+
+
+
 
